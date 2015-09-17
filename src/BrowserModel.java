@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 
 /**
@@ -21,45 +22,53 @@ public class BrowserModel {
     private int myCurrentIndex;
     private List<URL> myHistory;
     private Map<String, URL> myFavorites;
+    
+    private ResourceBundle myErrors;
+    
 
 
     /**
      * Creates an empty model.
      */
-    public BrowserModel () {
+    public BrowserModel (String language) {
         myHome = null;
         myCurrentURL = null;
         myCurrentIndex = -1;
         myHistory = new ArrayList<>();
         myFavorites = new HashMap<>();
+        
+        // Load error resource pack
+        myErrors = ResourceBundle.getBundle(BrowserView.DEFAULT_RESOURCE_PACKAGE + language + "_Errors");
     }
 
     /**
      * Returns the first page in next history, null if next history is empty.
      */
-    public URL next () {
+    public URL next() throws BrowserException {
         if (hasNext()) {
             myCurrentIndex++;
             return myHistory.get(myCurrentIndex);
         }
-        return null;
+        throw new BrowserException(myErrors.getString("EmptyNext"));
     }
 
     /**
      * Returns the first page in back history, null if back history is empty.
+     * @throws BrowserException 
      */
-    public URL back () {
+    public URL back() throws BrowserException  {
         if (hasPrevious()) {
             myCurrentIndex--;
             return myHistory.get(myCurrentIndex);
         }
-        return null;
+        throw new BrowserException(myErrors.getString("EmptyBack"));
     }
 
     /**
      * Changes current page to given URL, removing next history.
+     * @throws BrowserException 
      */
-    public URL go (String url) {
+    public URL go (String url) throws BrowserException {
         myCurrentURL = completeURL(url);
         if (myCurrentURL != null) {
             if (hasNext()) {
@@ -115,15 +124,15 @@ public class BrowserModel {
     /**
      * Returns URL from favorites associated with given name, null if none set.
      */
-    public URL getFavorite (String name) {
+    public URL getFavorite (String name) throws BrowserException {
         if (name != null && !name.equals("") && myFavorites.containsKey(name)) {
             return myFavorites.get(name);
         }
-        return null;
+        throw new BrowserException(myErrors.getString("EmptyFavorite"));
     }
 
     // deal with a potentially incomplete URL
-    private URL completeURL (String possible) {
+    private URL completeURL (String possible) throws BrowserException {
         try {
             // try it as is
             return new URL(possible);
@@ -137,7 +146,7 @@ public class BrowserModel {
                     // e.g., let user leave off initial protocol
                     return new URL(PROTOCOL_PREFIX + possible);
                 } catch (MalformedURLException eee) {
-                    return null;
+                    throw new BrowserException(String.format(myErrors.getString("MalformedURL"), PROTOCOL_PREFIX + possible));
                 }
             }
         }

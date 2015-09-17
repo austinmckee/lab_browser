@@ -8,16 +8,19 @@ import javafx.stage.Stage;
  * @author Robert C. Duvall
  */
 public class Main extends Application {
-    // convenience constants
+    private static final String ENGLISH = "English";
+	// convenience constants
     public static final String TITLE = "NanoBrowser";
     public static final String DEFAULT_START_PAGE = "http://www.cs.duke.edu/rcd";
 
 
     @Override
     public void start (Stage stage) {
+    	String language = ENGLISH;
+    	
         // create program specific components
-        BrowserModel model = new BrowserModel();
-        BrowserView display = new BrowserView(model, "English");
+        BrowserModel model = new BrowserModel(language);
+        BrowserView display = new BrowserView(model, language);
         // give the window a title
         stage.setTitle(TITLE);
         // add our user interface components to Frame and show it

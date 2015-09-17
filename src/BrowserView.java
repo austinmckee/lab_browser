@@ -64,6 +64,8 @@ public class BrowserView {
 	private ComboBox<String> myFavorites;
 	// get strings from resource file
 	private ResourceBundle myResources;
+	private ResourceBundle myErrors;
+	
 	// the data
 	private BrowserModel myModel;
 	private Button myFavoriteButton;
@@ -73,8 +75,11 @@ public class BrowserView {
 	 */
 	public BrowserView(BrowserModel model, String language) {
 		myModel = model;
+		
 		// use resources for labels
 		myResources = ResourceBundle.getBundle(DEFAULT_RESOURCE_PACKAGE + language);
+		
+		
 		BorderPane root = new BorderPane();
 		// must be first since other panels may refer to page
 		root.setCenter(makePageDisplay());
@@ -92,11 +97,13 @@ public class BrowserView {
 	 * Display given URL.
 	 */
 	public void showPage(String url) {
-		URL valid = myModel.go(url);
-		if (url != null) {
+		URL valid;
+		try {
+			valid = myModel.go(url);
 			update(valid);
-		} else {
-			showError("Could not load " + url);
+		} catch (BrowserException e) {
+			System.out.println("asdfasdf");
+			showError(e.getMessage());
 		}
 	}
 
@@ -126,12 +133,20 @@ public class BrowserView {
 
 	// move to the next URL in the history
 	private void next() {
-		update(myModel.next());
+		try {
+			update(myModel.next());
+		} catch (BrowserException e) {
+			showError(e.getMessage());
+		}
 	}
 
 	// move to the previous URL in the history
 	private void back() {
-		update(myModel.back());
+		try {
+			update(myModel.back());
+		} catch (BrowserException e) {
+			showError(e.getMessage());
+		}
 	}
 
 	// change current URL to the home page, if set
@@ -141,7 +156,11 @@ public class BrowserView {
 
 	// change page to favorite choice
 	private void showFavorite(String favorite) {
-		showPage(myModel.getFavorite(favorite).toString());
+		try {
+			showPage(myModel.getFavorite(favorite).toString());
+		} catch (BrowserException e) {
+			showError(e.getMessage());
+		}
 	}
 
 	// update just the view to display given URL
