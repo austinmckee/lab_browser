@@ -21,6 +21,7 @@ public class Main extends Application {
         // give the window a title
         stage.setTitle(TITLE);
         // add our user interface components to Frame and show it
+        setUserAgentStylesheet(STYLESHEET_MODENA);
         stage.setScene(display.getScene());
         stage.show();
         // start somewhere, less typing for debugging
