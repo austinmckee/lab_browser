@@ -121,6 +121,7 @@ public class BrowserView {
 		myStatus.setText(message);
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Display given message as an error in the GUI.
 	 */
@@ -139,6 +140,38 @@ public class BrowserView {
 			showError(e.getMessage());
 		}
 	}
+=======
+    /**
+     * Create a view of the given model of a web browser.
+     */
+    public BrowserView (BrowserModel model, String language) {
+        myModel = model;
+        // use resources for labels
+        myResources = ResourceBundle.getBundle(DEFAULT_RESOURCE_PACKAGE + language);
+        BorderPane root = new BorderPane();
+        // must be first since other panels may refer to page
+        root.setCenter(makePageDisplay());
+        root.setTop(makeInputPanel());
+        root.setBottom(makeInformationPanel());
+        // control the navigation
+        enableButtons();
+        // create scene to hold UI
+        myScene = new Scene(root, DEFAULT_SIZE.width, DEFAULT_SIZE.height);
+        myScene.getStylesheets().add(DEFAULT_RESOURCE_PACKAGE + STYLESHEET);
+    }
+
+    /**
+     * Display given URL.
+     */
+    public void showPage (String url) {
+        try {
+            update(myModel.go(url));
+        }
+        catch (BrowserException e) {
+            showError(e.getMessage());
+        }
+    }
+>>>>>>> duke-compsci308-fall2015/master
 
 	// move to the previous URL in the history
 	private void back() {
@@ -190,6 +223,7 @@ public class BrowserView {
 		myHomeButton.setDisable(myModel.getHome() == null);
 	}
 
+<<<<<<< HEAD
 	// convenience method to create HTML page display
 	private Node makePageDisplay() {
 		myPage = new WebView();
@@ -204,6 +238,22 @@ public class BrowserView {
 		result.getChildren().addAll(makeNavigationPanel(), makePreferencesPanel());
 		return result;
 	}
+=======
+    // change page to favorite choice
+    private void showFavorite (String favorite) {
+        showPage(myModel.getFavorite(favorite).toString());
+        // reset favorites so the same choice can be made again
+        myFavorites.setValue(null);
+    }
+
+    // update just the view to display given URL
+    private void update (URL url) {
+        String urlText = url.toString();
+        myPage.getEngine().load(urlText);
+        myURLDisplay.setText(urlText);
+        enableButtons();
+    }
+>>>>>>> duke-compsci308-fall2015/master
 
 	// make the panel where "would-be" clicked URL is displayed
 	private Node makeInformationPanel() {
@@ -254,10 +304,27 @@ public class BrowserView {
 			showFavorite(myFavorites.getValue());
 		});
 
+<<<<<<< HEAD
 		// favorite
 		myFavoriteButton = makeButton("AddFavoriteCommand", event -> addFavorite());
         result.getChildren().add(myFavoriteButton);
         
+=======
+    // make buttons for setting favorites/home URLs
+    private Node makePreferencesPanel () {
+        HBox result = new HBox();
+        myFavorites = new ComboBox<String>();
+        myFavorites.setPromptText(myResources.getString("FavoriteFirstItem"));
+        myFavorites.valueProperty().addListener((o, s1, s2) -> showFavorite(s2));
+        result.getChildren().add(makeButton("AddFavoriteCommand", event -> addFavorite()));
+        result.getChildren().add(myFavorites);
+        result.getChildren().add(makeButton("SetHomeCommand", event -> {
+            myModel.setHome();
+            enableButtons();
+        }));
+        return result;
+    }
+>>>>>>> duke-compsci308-fall2015/master
 
 		return result;
 	}
@@ -279,6 +346,7 @@ public class BrowserView {
 		return result;
 	}
 
+<<<<<<< HEAD
 	// make text field for input
 	private TextField makeInputField(int width, EventHandler<ActionEvent> handler) {
 		TextField result = new TextField();
@@ -286,6 +354,16 @@ public class BrowserView {
 		result.setOnAction(handler);
 		return result;
 	}
+=======
+    // display page
+    // very old style way create a callback (inner class)
+    private class ShowPage implements EventHandler<ActionEvent> {
+        @Override
+        public void handle (ActionEvent event) {
+            showPage(myURLDisplay.getText());
+        }
+    }
+>>>>>>> duke-compsci308-fall2015/master
 
 	// display page
 	// very old style way create a callback (inner class)
@@ -296,6 +374,7 @@ public class BrowserView {
 		}
 	}
 
+<<<<<<< HEAD
 	// Inner class to deal with link-clicks and mouse-overs Mostly taken from
 	// http://blogs.kiyut.com/tonny/2013/07/30/javafx-webview-addhyperlinklistener/
 	private class LinkListener implements ChangeListener<State> {
@@ -330,4 +409,41 @@ public class BrowserView {
 			}
 		}
 	};
+=======
+    // Inner class to deal with link-clicks and mouse-overs Mostly taken from
+    //   http://blogs.kiyut.com/tonny/2013/07/30/javafx-webview-addhyperlinklistener/
+    private class LinkListener implements ChangeListener<State> {
+        public static final String HTML_LINK = "href";
+        public static final String EVENT_CLICK = "click";
+        public static final String EVENT_MOUSEOVER = "mouseover";
+        public static final String EVENT_MOUSEOUT = "mouseout";
+
+        @Override
+        public void changed (ObservableValue<? extends State> ov, State oldState, State newState) {
+            if (newState == Worker.State.SUCCEEDED) {
+                EventListener listener = event -> {
+                    final String href = ((Element)event.getTarget()).getAttribute(HTML_LINK);
+                    if (href != null) {
+                        String domEventType = event.getType();
+                        if (domEventType.equals(EVENT_CLICK)) {
+                            showPage(href);
+                        } else if (domEventType.equals(EVENT_MOUSEOVER)) {
+                            showStatus(href);
+                        } else if (domEventType.equals(EVENT_MOUSEOUT)) {
+                            showStatus(BLANK);
+                        }
+                    }
+                };
+                Document doc = myPage.getEngine().getDocument();
+                NodeList nodes = doc.getElementsByTagName("a");
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    EventTarget node = (EventTarget)nodes.item(i);
+                    node.addEventListener(EVENT_CLICK, listener, false);
+                    node.addEventListener(EVENT_MOUSEOVER, listener, false);
+                    node.addEventListener(EVENT_MOUSEOUT, listener, false);
+                }
+            }
+        }
+    };
+>>>>>>> duke-compsci308-fall2015/master
 }
