@@ -23,14 +23,8 @@ public class BrowserModel {
     private int myCurrentIndex;
     private List<URL> myHistory;
     private Map<String, URL> myFavorites;
-<<<<<<< HEAD
-    
-    private ResourceBundle myErrors;
-    
-=======
     // get strings from resource file
     private ResourceBundle myResources;
->>>>>>> duke-compsci308-fall2015/master
 
 
     /**
@@ -42,14 +36,9 @@ public class BrowserModel {
         myCurrentIndex = -1;
         myHistory = new ArrayList<>();
         myFavorites = new HashMap<>();
-<<<<<<< HEAD
-        
-        // Load error resource pack
-        myErrors = ResourceBundle.getBundle(BrowserView.DEFAULT_RESOURCE_PACKAGE + language + "_Errors");
-=======
+
         // use resources for errors
         myResources = ResourceBundle.getBundle(DEFAULT_RESOURCES);
->>>>>>> duke-compsci308-fall2015/master
     }
 
     /**
@@ -60,13 +49,10 @@ public class BrowserModel {
             myCurrentIndex++;
             return myHistory.get(myCurrentIndex);
         }
-<<<<<<< HEAD
-        throw new BrowserException(myErrors.getString("EmptyNext"));
-=======
+
         else {
             throw new BrowserException(myResources.getString("NoNext"));
         }
->>>>>>> duke-compsci308-fall2015/master
     }
 
     /**
@@ -78,24 +64,17 @@ public class BrowserModel {
             myCurrentIndex--;
             return myHistory.get(myCurrentIndex);
         }
-<<<<<<< HEAD
-        throw new BrowserException(myErrors.getString("EmptyBack"));
-=======
+
         else {
             throw new BrowserException(myResources.getString("NoPrevious"));
         }
->>>>>>> duke-compsci308-fall2015/master
     }
 
     /**
      * Changes current page to given URL, removing next history.
      * @throws BrowserException 
      */
-<<<<<<< HEAD
-    public URL go (String url) throws BrowserException {
-        myCurrentURL = completeURL(url);
-        if (myCurrentURL != null) {
-=======
+
     public URL go (String url) {
         try {
             URL tmp = completeURL(url);
@@ -103,7 +82,6 @@ public class BrowserModel {
             tmp.openStream();
             // if successful, remember this URL
             myCurrentURL = tmp;
->>>>>>> duke-compsci308-fall2015/master
             if (hasNext()) {
                 myHistory = myHistory.subList(0, myCurrentIndex + 1);
             }
@@ -164,13 +142,6 @@ public class BrowserModel {
         if (name != null && !name.equals("") && myFavorites.containsKey(name)) {
             return myFavorites.get(name);
         }
-<<<<<<< HEAD
-        throw new BrowserException(myErrors.getString("EmptyFavorite"));
-    }
-
-    // deal with a potentially incomplete URL
-    private URL completeURL (String possible) throws BrowserException {
-=======
         else {
             throw new BrowserException(myResources.getString("BadFavorite"), name);
         }
@@ -178,7 +149,6 @@ public class BrowserModel {
 
     // deal with a potentially incomplete URL
     private URL completeURL (String possible) throws MalformedURLException {
->>>>>>> duke-compsci308-fall2015/master
         try {
             // try it as is
             return new URL(possible);
@@ -192,12 +162,8 @@ public class BrowserModel {
                     // e.g., let user leave off initial protocol
                     return new URL(PROTOCOL_PREFIX + possible);
                 } catch (MalformedURLException eee) {
-<<<<<<< HEAD
-                    throw new BrowserException(String.format(myErrors.getString("MalformedURL"), PROTOCOL_PREFIX + possible));
-=======
                     // nothing else to do, let caller report error to user
                     throw eee;
->>>>>>> duke-compsci308-fall2015/master
                 }
             }
         }
